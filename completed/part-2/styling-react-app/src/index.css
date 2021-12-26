@@ -1,0 +1,18 @@
+h1 {
+    color: blue;
+}
+
+.error {
+    color: red;
+    text-transform: capitalize;
+    font-style: italic;
+    margin-bottom: 1.5rem;
+}
+
+
+.success {
+    color: green;
+    text-transform: capitalize;
+    font-style: normal;
+    margin-bottom: 1.5rem;
+}

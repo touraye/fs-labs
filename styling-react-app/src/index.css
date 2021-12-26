@@ -1,0 +1,38 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: 0;
+}
+
+h1 {
+    color: blue;
+}
+
+h2 {
+    color: rgb(83, 5, 93);
+}
+
+h3 {
+    color: rgb(4, 85, 71)
+}
+
+.wrapper {
+    max-width: 600px;
+    margin: 2rem auto;
+    outline: 1px solid red;
+    padding: 2rem;
+}
+
+.successMag {
+    color: green;
+    font-weight: bold;
+    font-style: normal;
+    font-size: 1.6rem;
+}
+
+.errorMag {
+    color: red;
+    font-weight: bold;
+    font-style: italic;
+    font-size: 1.6rem;
+}
