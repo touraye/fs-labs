@@ -2,47 +2,24 @@ import React from 'react'
 import '@testing-library/jest-dom/extend-expect'
 import { render, fireEvent} from '@testing-library/react'
 
-import Togglable from './Togglable'
+import NoteForm from './NoteForm'
 
+test('<NoteForm /> updates parent state and calls onSubmit', () => {
+	const createNote = jest.fn()
 
-describe('<Togglable />', () => {
-	let component
+	const component = render(<NoteForm createNote={createNote} />)
 
-	beforeEach(() => {
-		component = render(
-			<Togglable buttonLabel='show...'>
-				<div className='testDiv' />
-			</Togglable>
-		)
+	const input = component.container.querySelector('input')
+	const form = component.container.querySelector('form')
+
+	fireEvent.change(input, {
+		target: { value: 'testing of forms could be easier' },
 	})
+	fireEvent.submit(form)
 
-	test('renders its children', () => {
-		expect(component.container.querySelector('.testDiv')).not.toBe(null)
-	})
-
-	test('at start the children are not displayed', () => {
-		const div = component.container.querySelector('.togglableContent')
-
-		expect(div).toHaveStyle('display: none')
-	})
-
-	test('after clicking the button, children are displayed', () => {
-		const button = component.getByText('show...')
-		fireEvent.click(button)
-
-		const div = component.container.querySelector('.togglableContent')
-		expect(div).not.toHaveStyle('display: none')
-    } )
-    
-    test('toggled content can be closed', () => {
-			const button = component.getByText('show...')
-			fireEvent.click(button)
-
-			const closeButton = component.getByText('cancel')
-			fireEvent.click(closeButton)
-
-			const div = component.container.querySelector('.togglableContent')
-			expect(div).toHaveStyle('display: none')
-		})
+	expect(createNote.mock.calls).toHaveLength(1)
+	expect(createNote.mock.calls[0][0].content).toBe(
+		'testing of forms could be easier'
+	)
 })
 
