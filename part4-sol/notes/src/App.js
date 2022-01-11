@@ -131,6 +131,7 @@ const App = () => {
 
 	const handleLogout = () => {
 		window.localStorage.clear()
+		setUser(null)
 	}
 	
 	const noteFormRef = useRef()
