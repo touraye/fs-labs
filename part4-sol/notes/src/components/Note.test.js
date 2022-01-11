@@ -9,7 +9,9 @@ test('renders content', () => {
 		important: true,
 	}
 
-	const component = render(<Note note={note} />)
+    const component = render( <Note note={ note } /> )
+    
+    component.debug()
 
     //method 1
 	expect(component.container).toHaveTextContent(
