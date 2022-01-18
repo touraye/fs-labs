@@ -1,4 +1,4 @@
-  import React from 'react'
+import React from 'react'
 
 const Notification = ({ message }) => {
   if (message === null) {
@@ -7,7 +7,7 @@ const Notification = ({ message }) => {
 
   return (
     <div className="error">
-      {message}
+      { message }
     </div>
   )
 }
