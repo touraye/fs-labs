@@ -1,16 +1,7 @@
 import { useState } from 'react'
-import { gql, useMutation } from '@apollo/client'
-import {CREATE_PERSON} from '../queries'
+import { useMutation } from '@apollo/client'
+import {CREATE_PERSON, ALL_PERSONS} from '../queries'
 
-const ALL_PERSONS = gql`
-  query  {
-    allPersons  {
-      name
-      phone
-      id
-    }
-  }
-`
 
 const PersonForm = ({setError}) => {
     const [name, setName] = useState('')
