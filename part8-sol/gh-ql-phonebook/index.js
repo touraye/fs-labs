@@ -1,5 +1,20 @@
-const { ApolloServer,UserInputError, gql } = require( 'apollo-server' )
+const { ApolloServer, UserInputError, gql } = require( 'apollo-server' )
+const mongoose = require( 'mongoose' )
+const Person = require('./models/person')
 const { v1: uuid } = require( 'uuid' )
+
+const MONGODB_URI = 'mongodb://localhost:27017/gqlphonebook'
+
+console.log('connecting to', MONGODB_URI)
+
+mongoose
+	.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+	.then(() => {
+		console.log('connected to MongoDB')
+	})
+	.catch((error) => {
+		console.log('error connection to MongoDB:', error.message)
+	})
 
 let persons = [
 	{
@@ -37,9 +52,14 @@ const typeDefs = gql`
 		id: ID!
 	}
 
+	enum YesNo {
+		YES
+		NO
+	}
+
 	type Query {
 		personCount: Int!
-		allPersons: [Person!]!
+		allPersons(phone: YesNo): [Person!]!
 		findPerson(name: String!): Person
 	}
 
@@ -50,14 +70,24 @@ const typeDefs = gql`
 			street: String!
 			city: String!
 		): Person
+		editNumber(
+			name: String!, 
+			phone: String!
+			): Person
 	}
 `
 
 const resolvers = {
 	Query: {
-		personCount: () => persons.length,
-		allPersons: () => persons,
-		findPerson: (root, args) => persons.find((p) => p.name === args.name),
+		personCount: async () => Person.collection.countDocuments(),	
+		allPersons: async (root, args) => {
+			if (!args.phone) {
+				return Person.find({})
+			}
+
+			return Person.find({ phone: { $exists: args.phone === 'YES' } })
+		},
+		findPerson: async (root, args) => Person.findOne({ name: args.name }),
 	},
 	Person: {
 		address: (root) => {
@@ -68,18 +98,32 @@ const resolvers = {
 		},
 	},
 	Mutation: {
-		addPerson: ( root, args ) => {
-			if ( persons.find( p => p.name === args.name ) ) {
-				throw new UserInputError('Name must be unique', {
-					invalidArgs: args.name,
+		addPerson: async (root, args) => {
+			const person = new Person({ ...args })
+
+			try {
+				await person.save()
+			} catch (error) {
+				throw new UserInputError(error.message, {
+					invalidArgs: args,
 				})
 			}
-
-			const person = { ...args, id: uuid() }
-			persons = persons.concat( person )
 			return person
-		}
-	}
+		},
+		editNumber: async (root, args) => {
+			const person = await Person.findOne({ name: args.name })
+			person.phone = args.phone
+
+			try {
+				await person.save()
+			} catch (error) {
+				throw new UserInputError(error.message, {
+					invalidArgs: args,
+				})
+			}
+			return person
+		},
+	},
 }
 
 const server = new ApolloServer({
