@@ -26,6 +26,7 @@ const PersonForm = ({setError}) => {
     setStreet('')
     setCity('')
   }
+  
   return (
     <div>
             <h2>create new</h2>
